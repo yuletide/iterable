@@ -1,60 +1,85 @@
-usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'rubygems'
-require 'commander/import'
-
-program :name, 'update_users'
-program :version, '0.0.1'
-program :description, 'Updates users on iterable from a local CSV with  options to pass sample API payloads'
-
-command :update, do |c|
-  c.syntax = 'update_users update, [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
-  c.action do |args, options|
-    # Do something or c.when_called Update_users::Commands::Update,
-  end
-end
-require 'dotenv'
+require 'optparse'
 require 'smarter_csv'
 require 'httparty'
-
-
-
-
+require 'dotenv'
 
 Dotenv.load
 
-class UpdateUsers
-  ITERABLE_API_KEY = ENV['ITERABLE_API_KEY']
-  USERS_FILE_PATH = "se_assignment_users.csv"
+$options = {}
+$options[:bulk] = false
+$options[:file_path] = "users.csv"
+#API key can be specified in .env file or passed in as an option
+$options[:api_key] = ENV["ITERABLE_API_KEY"]
+$users = []
 
-  def self.load_csv
-    users = SmarterCSV.process(USERS_FILE_PATH)
-    puts users
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: iterable.rb [$options]"
+  opts.on("-b","--bulk", "perform bulk update") do 
+    $options[:bulk] = true
+    p 'bulk'
   end
 
-  def self.build_request
-
+  opts.on("-k","--key KEY", "specify api key") do |key|
+    p key
+    $options[:api_key] = key
   end
 
-
-  #bulk update
-  def self.update_users_bulk
-
+  opts.on("-f","--file path", "specify path to users file") do |path|
+    p path
+    $options[:file_path] = path
   end
+end.parse!
 
-  #individual updates
-  def self.update_users
-    load_csv
+def load_csv
+  csv = SmarterCSV.process($options[:file_path])
+
+  csv.each do |user|
+    user_obj = Hash.new
+    user_obj[:email] = user[:email]
+    user.delete(:email)
+    user_obj[:dataFields] = user
+    $users << user_obj
   end
 end
 
-if ARGV.include?("bulk")
-  UpdateUsers.update_users_bulk
+#bulk update
+def update_users_bulk
+  
+end
+
+#individual updates
+def update_users
+  $users.each do |user|
+    update_user(user)
+  end
+end
+
+def update_user(user)
+# Sample JSON body:
+# 
+# {
+#    "email": "sherry@iterable.com",
+#    "dataFields": {
+#       "catName": "Jimmy"
+#    },
+#    "userId": "1"
+# }
+
+end
+
+load_csv
+if $options[:bulk]
+  update_users_bulk
 else
-  UpdateUsers.update_users
+  update_users
+end
+
+class Iterable
+  include HTTParty
+  base_uri = "api.iterable.com"
+
 end
 
