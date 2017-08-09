@@ -20,6 +20,9 @@ Usage: iterable.rb [$options]                                                   
     -f, --file path                  specify path to users file
     -v, --verbose                    log everything
 
+$./iterable.rb -b
+Time: 00:00:06  ETA: 00:01:17  7.31% [==                                       ]
+
 $ ./iterable.rb -v -k "API KEY" -f "users.csv" -b
 custom api key specified via flag: API KEY
 custom csv path specified: users.csv
