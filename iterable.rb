@@ -33,12 +33,12 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-k","--key KEY", "specify api key") do |key|
-    log key
+    log "custom api key specified via flag: #{key}"
     $options[:api_key] = key
   end
 
   opts.on("-f","--file path", "specify path to users file") do |path|
-    log path
+    log "custom csv path specified: #{path}"
     $options[:file_path] = path
   end
 
