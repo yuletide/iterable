@@ -67,7 +67,7 @@ def update_users_bulk
   users.each_slice(50) do |slice|
     resp = Iterable.post("/users/bulkUpdate", {body: slice.to_json})
     $bar.increment
-    log "#{resp.code} #{resp.message}"
+    log "#{resp.code}: #{resp.parsed_response["code"]} (#{resp.parsed_response["msg"]})"
   end
 end
 
@@ -82,9 +82,9 @@ def update_users
 end
 
 def update_user(user)
-  log "Updating user: #{user}"
+  log "Updating user: #{user[:email]}"
   resp = Iterable.post("/users/update", {body: user.to_json})
-  log "#{resp.code} #{resp.message}"
+  log "#{resp.code}: #{resp.parsed_response["code"]} (#{resp.parsed_response["msg"]})"
 end
 
 if $options[:bulk]
