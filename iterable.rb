@@ -1,11 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
 require 'optparse'
 require 'smarter_csv'
 require 'httparty'
 require 'dotenv'
-require 'pp'
 
 Dotenv.load
 $options = {}
@@ -25,7 +23,6 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: iterable.rb [$options]"
   opts.on("-b","--bulk", "perform bulk update") do 
     $options[:bulk] = true
-    p 'bulk'
   end
 
   opts.on("-k","--key KEY", "specify api key") do |key|
@@ -53,8 +50,9 @@ end
 
 #bulk update
 def update_users_bulk
-  users = $users[1,3].to_json
-  pp users
+  p "Updating users in bulk"
+  resp = Iterable.post("/users/bulkUpdate", {body: $users.to_json})
+  p resp.code
 end
 
 #individual updates
