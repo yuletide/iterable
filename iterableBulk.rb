@@ -13,7 +13,6 @@ $options[:file_path] = "users.csv"
 #API key can be specified in .env file or passed in as an option
 $options[:api_key] = ENV["ITERABLE_API_KEY"]
 $options[:verbose] = false
-$users = []
 $bar = ProgressBar.create format: "%a %e %P% [%B]"
 
 class Iterable
@@ -45,26 +44,27 @@ parser = OptionParser.new do |opts|
   opts.on("-v","--verbose", "log everything") do
     $options[:verbose] = true
   end
-  
 end.parse!
 
 def load_csv
+  users = []
   csv = SmarterCSV.process($options[:file_path])
-
   csv.each do |user|
     user_obj = Hash.new
     user_obj[:email] = user[:email]
     user.delete(:email)
     user_obj[:dataFields] = user
-    $users << user_obj
+    users << user_obj
   end
+  return users
 end
 
 #bulk update
 def update_users_bulk
   log "Updating users in bulk"
-  $bar.total = $users.length / 50
-  $users.each_slice(50) do |slice|
+  users = load_csv
+  $bar.total = users.length / 50
+  users.each_slice(50) do |slice|
     resp = Iterable.post("/users/bulkUpdate", {body: slice.to_json})
     $bar.increment
     log "#{resp.code} #{resp.message}"
@@ -73,8 +73,9 @@ end
 
 #individual updates
 def update_users
-  $bar.total = $users.length
-  $users.each do |user|
+  users = load_csv
+  $bar.total = users.length
+  users.each do |user|
     $bar.increment
     update_user(user)
   end
@@ -86,10 +87,6 @@ def update_user(user)
   log "#{resp.code} #{resp.message}"
 end
 
-
-log $options
-
-load_csv
 if $options[:bulk]
   update_users_bulk
 else
