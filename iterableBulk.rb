@@ -96,4 +96,3 @@ else
   update_users
 end
 
-
