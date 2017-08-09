@@ -4,4 +4,4 @@ ruby '2.1.5'
 gem 'httparty'
 gem 'dotenv'
 gem 'smarter_csv'
-
+gem 'progressbar'

@@ -8,7 +8,7 @@ require 'progressbar'
 
 Dotenv.load
 $options = {}
-$options[:bulk] = false
+$options[:bulk] = true
 $options[:file_path] = "users.csv"
 #API key can be specified in .env file or passed in as an option
 $options[:api_key] = ENV["ITERABLE_API_KEY"]
