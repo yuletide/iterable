@@ -19,3 +19,6 @@ Usage: iterable.rb [$options]                                                   
     -f, --file path                  specify path to users file
     -v, --verbose                    log everything
 ```
+
+iterableBulk.rb is just a clone of iterable.rb with bulk set to true by default
+
