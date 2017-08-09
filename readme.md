@@ -3,11 +3,11 @@
 Sample tool to upload a csv of user data to Iterable 
 
 ### Prerequisites
-
-Tested with Ruby-2.1.5
+Bundler
+Ruby-2.1.5
 
 ### Installing
-Clone the repo and run `bundle`
+Clone the repo and run `bundle` to install gems
 
 ### Usage
 
