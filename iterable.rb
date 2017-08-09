@@ -5,15 +5,21 @@ require 'optparse'
 require 'smarter_csv'
 require 'httparty'
 require 'dotenv'
+require 'pp'
 
 Dotenv.load
-
 $options = {}
 $options[:bulk] = false
 $options[:file_path] = "users.csv"
 #API key can be specified in .env file or passed in as an option
 $options[:api_key] = ENV["ITERABLE_API_KEY"]
 $users = []
+
+class Iterable
+  include HTTParty
+  base_uri 'https://api.iterable.com/api'
+  default_params api_key: $options[:api_key]
+end
 
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: iterable.rb [$options]"
@@ -47,7 +53,8 @@ end
 
 #bulk update
 def update_users_bulk
-  
+  users = $users[1,3].to_json
+  pp users
 end
 
 #individual updates
@@ -58,16 +65,9 @@ def update_users
 end
 
 def update_user(user)
-# Sample JSON body:
-# 
-# {
-#    "email": "sherry@iterable.com",
-#    "dataFields": {
-#       "catName": "Jimmy"
-#    },
-#    "userId": "1"
-# }
-
+  p "Updating user: #{user}"
+  resp = Iterable.post("/users/update", {body: user.to_json})
+  p resp.code
 end
 
 load_csv
@@ -77,9 +77,4 @@ else
   update_users
 end
 
-class Iterable
-  include HTTParty
-  base_uri = "api.iterable.com"
-
-end
 
